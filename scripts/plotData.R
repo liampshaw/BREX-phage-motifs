@@ -1,0 +1,150 @@
+options(stringsAsFactors = FALSE)
+library(ggplot2, quietly=TRUE)
+library(reshape2, quietly=TRUE)
+suppressMessages(library(tidyr, quietly=TRUE))
+library(cowplot, quietly=TRUE)
+suppressMessages(library(dplyr, quietly=TRUE))
+
+
+dataDir = "data/" # assumes being run from main directory
+figureDir = "output/" # for figures
+PHAGE_LEVELS = rev(c("TB34", "Trib","Baz","Alma","Pau","BB1","Jura", "Mak","Bam","CS16","Mav","Sip"))
+
+
+
+motif_df = read.csv('output/motif_counts.csv',
+                    header=T)
+length_df = read.csv('output/phage_lengths.csv', 
+                     header=T)
+rownames(length_df) = length_df$phage
+table_four_df = read.csv('data/old-table.csv',
+                         header=T)
+rownames(table_four_df) = table_four_df$phage
+table_four_df = table_four_df[unique(length_df$phage),]
+
+table_four_df.melt = melt(table_four_df, id.vars = c("phage", "group"))
+table_four_df.melt$phage = ordered(table_four_df.melt$phage,
+                                   levels=PHAGE_LEVELS)
+table_four_df.melt = table_four_df.melt %>% mutate(value.bin=cut(value,
+                                                                 breaks=c(0, 0.00001, 0.001, 0.01,0.1, 1000),
+                                                                 labels=c("10 ^ {-5}", "10 ^ {-5}-10 ^ {-3}", "10 ^ {-3}-10 ^ {-2}", "10 ^ {-2}-10 ^ {-1}", "10 ^ {-1}")))
+table_four_df.melt$variable = ordered(table_four_df.melt$variable,
+                                      levels=c("pBrxXL.Eferg", "pBREX.AL","pBrxXL.Sty"),
+                                      labels=c("pBrxXL(Eferg)", "pBREX-AL", "pBrxXL(Sty)"))
+
+parse.labels <- function(x) parse(text = x)
+
+#table_four_df.melt$variable = ordered(table_four_df.melt$variable, 
+#                                      levels=levels(table_four_df.melt$variable),
+#                                      labels=c(""))
+p.EOP = ggplot(table_four_df.melt, aes(y=phage, x=variable, fill=value.bin))+
+  geom_tile(width=1, colour="black")+
+  scale_fill_manual(values=c("#F31C41",  "#F7637C", "#ED7D31", "#FFC002","#70AD47"),
+                    labels=parse.labels)+
+  theme_bw()+
+  facet_grid(group~.,scales = "free_y",space="free_y")+
+  theme(axis.text=element_text(colour="black"))+
+  theme(panel.grid = element_blank())+
+  theme(strip.background = element_blank(),
+        strip.text.x = element_blank())+
+  scale_x_discrete(position="top")+
+  theme(axis.text.x=element_text(angle=45, hjust=0,size=6))+
+  xlab("")+
+  ylab("")+
+  labs(fill="EOP")+
+  theme(legend.position = "n")+
+  theme(strip.text=element_blank(),
+        strip.background = element_blank(),
+        panel.border = element_blank(),
+        axis.text=element_text(family="sans"),
+        axis.ticks=element_blank())
+ggsave(p.EOP, file=paste0(figureDir, "EOP-plot.pdf"), width=5, height=10)
+
+test_motif_df = motif_df[which(motif_df$phage=="Jura"),]
+test_length_df = length_df[which(length_df$phage=="JuraSubmitted"),]
+
+# Looking at possible correlation between motif counts and EOP??
+motif_df$n = 1
+total_counts_df = motif_df %>%     complete(phage, motif, fill = list(n = 0)) %>%
+  group_by(phage, motif, .drop = FALSE) %>%
+  summarise(count=sum(n))
+total_counts_df$phage_length = length_df[total_counts_df$phage, "genome_length"]
+total_counts_df = total_counts_df %>% mutate(count.norm=count/phage_length)
+
+
+total_counts_df$phage = ordered(total_counts_df$phage,
+                                levels=rev(PHAGE_LEVELS))
+motif_df$group = table_four_df[as.character(motif_df$phage), "group"]
+length_df$group = table_four_df[as.character(length_df$phage), "group"]
+total_counts_df$group = table_four_df[as.character(total_counts_df$phage), "group"]
+
+
+motif.labels = c(GATCAG=expression(paste0("GATC", underline(A), "G")),
+                 GCTAAT=expression(GCTA~underline(A)~T),
+                 GGTAAG=expression(GGTA~underline(A)~G))
+#motif_df$motif.underlined = as.list(motif.labels[motif_df$motif])
+
+
+motif_df$phage = ordered(motif_df$phage, 
+                         levels=rev(PHAGE_LEVELS))
+
+motif_df$motif = ordered(motif_df$motif,
+                         levels=c("GCTAAT", "GGTAAG", "GATCAG"))
+
+p.motif.histogram = ggplot(motif_df, aes(x=position, y=phage))+
+  geom_col(data=length_df, aes(x=genome_length, y=phage), colour="black", fill="white", alpha=0.5, width=0.4)+
+  geom_point(shape="|", size=2.5, alpha=0.6, colour="red")+
+  theme_bw()+
+  theme(panel.grid = element_blank())+
+  theme(axis.text=element_text(colour="black"),
+        axis.title=element_text(colour="black"))+
+  xlab("Phage size (kb)")+
+  ylab("Motif density (per kb)")+
+  scale_color_manual(values=c("#e7298a", "#7570b3"))+
+  theme(strip.background.y = element_blank(),
+        strip.text.y = element_blank())+
+  scale_x_continuous(breaks=c(0,50000,100000,150000),
+                     labels=c("0", "50", "100", "150"),limits = c(-10, 185000))+
+  ylab("")+
+  geom_text(x=176000,data=total_counts_df, aes(label=count) )+
+  facet_grid(group~as.factor(motif), space="free", scales = "free_y",
+             labeller = label_parsed)+
+  theme(panel.border = element_blank())+
+  theme(axis.line.x=element_line(colour="black"),
+        axis.text.y=element_blank(), axis.ticks.y=element_blank())
+
+p.combined = cowplot::plot_grid(p.motif.histogram, 
+                                p.EOP,
+                                nrow=1,
+                                align='h', axis='bt',
+                                rel_widths=c(1.2, 0.3))
+ggsave(p.combined, file=paste0(figureDir, "Main-figure.pdf"), width=10, height=8)
+
+
+# SUPPLEMENTARY 
+length_df$phage = ordered(length_df$phage,
+                          levels=PHAGE_LEVELS)
+motif_df$phage = ordered(motif_df$phage,
+                         levels=rev(PHAGE_LEVELS))
+length_df = rbind(length_df, length_df)
+length_df$strand = c(rep("+", nrow(length_df)/2),
+                     rep("-", nrow(length_df)/2))
+p.motif.positions = ggplot(motif_df, aes(strand, position,group=phage, colour=strand))+
+  geom_bar(data=length_df, aes(strand, genome_length), colour="black", stat="identity", width=0.05, fill="black")+
+  geom_point(shape='|',
+             size=4)+
+  coord_flip()+
+  theme_bw()+
+  facet_grid(phage~motif, scales="free", space="free")+
+  theme(panel.grid = element_blank())+
+  theme(axis.text=element_text(colour="black"),
+        axis.title=element_text(colour="black"))+
+  scale_y_continuous(breaks=c(0,50000,100000,150000),
+                     labels=c("0", "50", "100", "150"))+
+  ylab("Phage size (kb)")+
+  xlab("")+
+  theme(legend.position = "none")+
+  scale_color_manual(values=c("#e7298a", "#7570b3"))
+
+ggsave(p.motif.positions, file=paste0(figureDir, "Supplementary-figure.pdf"), width=10, height=8)
+

@@ -1,0 +1,8 @@
+name: brex_phage
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+    - biopython
+    - pandas
