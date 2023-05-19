@@ -4,7 +4,8 @@
 
 rule all:
 	input:
-		"output/Main-figure.pdf"
+		"output/Main-figure.pdf",
+		"output/checkv-output/quality_summary.tsv"
 
 rule count_motifs:
 	output:
@@ -21,4 +22,13 @@ rule make_R_plot:
 		"output/Main-figure.pdf"
 	run:
 		"Rscript scripts/plotData.R"
+
+rule run_check_v:
+	input:
+		"scripts/run_checkv.sh"
+	output:
+		"output/checkv-output/quality_summary.tsv"
+	run:
+		shell("cd scripts")
+		shell("./run_checkv.sh")
 

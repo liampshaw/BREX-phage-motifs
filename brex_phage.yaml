@@ -6,3 +6,5 @@ channels:
 dependencies:
     - biopython
     - pandas
+    - checkv
+    - snakemake

@@ -1,0 +1,13 @@
+contig_id	contig_length	provirus	proviral_length	gene_count	viral_genes	host_genes	checkv_quality	miuvig_quality	completeness	completeness_method	contamination	kmer_freq	warnings
+Alma	136980	No	NA	229	199	0	High-quality	High-quality	97.65	AAI-based (high-confidence)	0	1	
+BB1	110099	No	NA	149	123	0	Complete	High-quality	100	DTR (high-confidence)	0	1	
+Bam	40137	No	NA	49	32	1	High-quality	High-quality	100	AAI-based (high-confidence)	0	1	
+Baz	87693	No	NA	128	115	0	High-quality	High-quality	99.6	AAI-based (high-confidence)	0	1	
+CS16	42656	No	NA	58	45	0	Complete	High-quality	100	DTR (high-confidence)	0	1	
+Jura	71488	No	NA	77	61	0	High-quality	High-quality	98.54	AAI-based (high-confidence)	0	1	
+Mak	40137	No	NA	48	32	1	High-quality	High-quality	100	AAI-based (high-confidence)	0	1	
+Mav	42624	No	NA	57	45	0	High-quality	High-quality	95.32	AAI-based (high-confidence)	0	1	
+Pau	146554	No	NA	236	142	1	Complete	High-quality	100	DTR (high-confidence)	0	1	
+Sip	50809	No	NA	86	69	0	Complete	High-quality	100	DTR (high-confidence)	0	1	
+TB34	165220	No	NA	279	182	0	High-quality	High-quality	99.14	AAI-based (high-confidence)	0	1	
+Trib	88854	No	NA	131	118	0	High-quality	High-quality	100	AAI-based (high-confidence)	0	1	

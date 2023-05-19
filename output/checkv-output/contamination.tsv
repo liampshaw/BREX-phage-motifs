@@ -1,0 +1,13 @@
+contig_id	contig_length	total_genes	viral_genes	host_genes	provirus	proviral_length	host_length	region_types	region_lengths	region_coords_bp	region_coords_genes	region_viral_genes	region_host_genes
+Alma	136980	229	199	0	No	NA	NA	NA	NA	NA	NA	NA	NA
+BB1	110099	149	123	0	No	NA	NA	NA	NA	NA	NA	NA	NA
+Bam	40137	49	32	1	No	NA	NA	NA	NA	NA	NA	NA	NA
+Baz	87693	128	115	0	No	NA	NA	NA	NA	NA	NA	NA	NA
+CS16	42656	58	45	0	No	NA	NA	NA	NA	NA	NA	NA	NA
+Jura	71488	77	61	0	No	NA	NA	NA	NA	NA	NA	NA	NA
+Mak	40137	48	32	1	No	NA	NA	NA	NA	NA	NA	NA	NA
+Mav	42624	57	45	0	No	NA	NA	NA	NA	NA	NA	NA	NA
+Pau	146554	236	142	1	No	NA	NA	NA	NA	NA	NA	NA	NA
+Sip	50809	86	69	0	No	NA	NA	NA	NA	NA	NA	NA	NA
+TB34	165220	279	182	0	No	NA	NA	NA	NA	NA	NA	NA	NA
+Trib	88854	131	118	0	No	NA	NA	NA	NA	NA	NA	NA	NA
